@@ -2,6 +2,7 @@ import { api } from "~/trpc/server";
 import FileList from "../../../_components/FileList";
 import FolderList from "../../../_components/FolderList";
 import Breadcrumbs from "../_components/Breadcrumbs";
+import FileUpload from "../_components/FileUpload";
 
 export const runtime = "nodejs";
 
@@ -20,8 +21,9 @@ export default async function FolderPage({
   return (
     <div className="flex flex-col gap-6">
       <div className="mx-auto max-w-2xl px-4 py-12 flex flex-col gap-6">
-        <Breadcrumbs initialData={breadcrumbFolders} dataRoomId={id} path={path}/>
-        <FileList initialData={files} dataRoomId={id} />
+        <Breadcrumbs initialData={breadcrumbFolders} dataRoomId={id} path={path} />
+        <FileUpload dataRoomId={id} folderId={currentFolderId} />
+        <FileList dataRoomId={id} folderId={currentFolderId} />
         <FolderList initialData={folders} dataRoomId={id} parentId={currentFolderId} path={path} />
       </div>
     </div>

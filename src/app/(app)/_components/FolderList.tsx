@@ -44,7 +44,10 @@ export function FolderList({
     });
 
     const deleteMutation = api.folder.delete.useMutation({
-        onSuccess: () => void utils.folder.list.invalidate(),
+        onSuccess: () => {
+            console.log("invalidating file list");
+            void utils.file.list.invalidate();
+        },
     });
 
     const [countTarget, setCountTarget] = useState<string | null>(null);

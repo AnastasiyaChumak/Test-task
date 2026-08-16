@@ -14,4 +14,15 @@ export const fileRouter = createTRPCRouter({
         .mutation(({ input }) => {
             return fileRepository.fileCreate(input.name, input.blobUrl, input.size, input.mimeType, input.dataRoomId, input.folderId);
         }),
+    rename: protectedProcedure
+        .input(z.object({ id: z.string(), name: z.string().min(1).max(255) }))
+        .mutation(({ input }) => fileRepository.fileRename(input.id, input.name)),
+
+    delete: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(({ input }) => fileRepository.fileDelete(input.id)),
+
+    move: protectedProcedure
+        .input(z.object({ id: z.string(), folderId: z.string().nullable() }))
+        .mutation(({ input }) => fileRepository.fileMove(input.id, input.folderId)),
 });

@@ -17,7 +17,7 @@ async function fileCreate(name: string, blobUrl: string, size: number, mimeType:
     }
 
     const created = await prisma.file.create({
-        data: { name, blobUrl, size, folderId, mimeType, dataRoom: { connect: { id: dataRoomId } } },
+        data: { name, blobUrl, size, folderId, mimeType, dataRoomId },
     });
 
     return dbFileToEntity(created);
@@ -31,4 +31,24 @@ function dbFileToEntity(file: PrismaFile): File {
     };
 }
 
-export const fileRepository = { fileList, fileCreate };
+async function fileRename(id: string, name: string): Promise<File> {
+    const updated = await prisma.file.update({
+        where: { id },
+        data: { name },
+    });
+    return dbFileToEntity(updated);
+}
+
+async function fileDelete(id: string): Promise<void> {
+    await prisma.file.delete({ where: { id } });
+}
+
+async function fileMove(id: string, folderId: string | null): Promise<File> {
+    const updated = await prisma.file.update({
+        where: { id },
+        data: { folderId },
+    });
+    return dbFileToEntity(updated);
+}
+
+export const fileRepository = { fileList, fileCreate, fileRename, fileDelete, fileMove };

@@ -84,5 +84,12 @@ async function folderDelete(folderId: string): Promise<void> {
         where: { path: { startsWith: target.path } },
     });
 }
+async function folderListAll(dataRoomId: string): Promise<Folder[]> {
+    const folders = await prisma.folder.findMany({
+        where: { dataRoomId },
+        orderBy: { name: "asc" },
+    });
+    return folders.map(dbFolderToEntity);
+}
 
-export const folderRepository = { folderList, folderCreate, folderGetByIds, folderRename, folderCountSubtree, folderDelete };
+export const folderRepository = { folderList, folderCreate, folderGetByIds, folderRename, folderCountSubtree, folderDelete, folderListAll };

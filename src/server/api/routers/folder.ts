@@ -31,4 +31,8 @@ export const folderRouter = createTRPCRouter({
     delete: protectedProcedure
         .input(z.object({ folderId: z.string() }))
         .mutation(({ input }) => folderRepository.folderDelete(input.folderId)),
+
+    listAll: protectedProcedure
+        .input(z.object({ dataRoomId: z.string() }))
+        .query(({ input }) => folderRepository.folderListAll(input.dataRoomId)),
 });

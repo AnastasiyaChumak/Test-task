@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model DataRoom {
+    id        String   @id @default(cuid())
+    name      String
+    ownerId   String
+    owner     User     @relation(fields: [ownerId], references: [id])
+    folders   Folder[]
+    files     File[]
+    createdAt DateTime @default(now())
+}
+
+model Folder {
+    id         String   @id @default(cuid())
+    name       String
+    path       String
+    dataRoomId String
+    dataRoom   DataRoom @relation(fields: [dataRoomId], references: [id])
+    parentId   String?
+    parent     Folder?  @relation("FolderTree", fields: [parentId], references: [id])
+    children   Folder[] @relation("FolderTree")
+    files      File[]
+    createdAt  DateTime @default(now())
+}
+
+model File {
+    id         String   @id @default(cuid())
+    name       String
+    size       Int
+    mimeType   String
+    blobUrl    String
+    dataRoomId String
+    dataRoom   DataRoom @relation(fields: [dataRoomId], references: [id])
+    folderId   String?
+    folder     Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
+    createdAt  DateTime @default(now())
+}
+
+model Share {
+    id           String   @id @default(cuid())
+    resourceType String
+    resourceId   String
+    mode         String
+    token        String?  @unique
+    sharedWithId String?
+    sharedWith   User?    @relation(fields: [sharedWithId], references: [id])
+    ownerId      String
+    isActive     Boolean  @default(true)
+    createdAt    DateTime @default(now())
+}
+
+model User {
+    id            String     @id @default(cuid())
+    name          String?
+    login         String?
+    passwordHash  String?
+    email         String?    @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    dataRooms     DataRoom[]
+    shares        Share[]
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}

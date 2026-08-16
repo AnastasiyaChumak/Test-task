@@ -1,18 +1,23 @@
-DataRoom just-for-fun.
-
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Shadcn](https://ui.shadcn.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
-- [Lucide](https://lucide.dev)
-
 # Data Room
 
 A minimal virtual Data Room application — create Data Rooms, organize nested folders and files inside them, and (optionally) share them with others.
 
 Built with Next.js App Router, tRPC, Prisma, PostgreSQL, NextAuth (Google OAuth), shadcn/ui, and Vercel Blob for file storage.
+
+# Live Demo
+
+dataroom-dun.vercel.app
+
+# Technologies
+
+- [Next.js](https://nextjs.org)
+- [NextAuth.js](https://next-auth.js.org)
+- [OAuth](https://console.cloud.google.com)
+- [Prisma](https://prisma.io)
+- [Shadcn](https://ui.shadcn.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [tRPC](https://trpc.io)
+- [Lucide](https://lucide.dev)
 
 ## Setup
 

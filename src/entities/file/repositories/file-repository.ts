@@ -11,16 +11,30 @@ async function fileList(dataRoomId: string, folderId: string | null): Promise<Fi
 }
 
 async function fileCreate(name: string, blobUrl: string, size: number, mimeType: string, dataRoomId: string, folderId: string | null): Promise<File> {
-    const existing = await prisma.file.findFirst({ where: { name, folderId, dataRoomId } });
-    if (existing) {
-        throw new Error("File already exists. Choose something oRiGiNaL.");
-    }
+    const finalName = await generateUniqueFileName(name, dataRoomId, folderId);
 
     const created = await prisma.file.create({
-        data: { name, blobUrl, size, folderId, mimeType, dataRoomId },
+        data: { name: finalName, blobUrl, size, folderId, mimeType, dataRoomId },
     });
 
     return dbFileToEntity(created);
+}
+
+async function generateUniqueFileName(name: string, dataRoomId: string, folderId: string | null): Promise<string> {
+    const existing = await prisma.file.findFirst({ where: { name, folderId, dataRoomId } });
+    if (!existing) return name;
+
+    const dotIndex = name.lastIndexOf(".");
+    const base = dotIndex > 0 ? name.slice(0, dotIndex) : name;
+    const ext = dotIndex > 0 ? name.slice(dotIndex) : "";
+
+    let counter = 1;
+    let candidate = `${base} (${counter})${ext}`;
+    while (await prisma.file.findFirst({ where: { name: candidate, folderId, dataRoomId } })) {
+        counter++;
+        candidate = `${base} (${counter})${ext}`;
+    }
+    return candidate;
 }
 
 function dbFileToEntity(file: PrismaFile): File {
@@ -28,6 +42,7 @@ function dbFileToEntity(file: PrismaFile): File {
         id: file.id,
         name: file.name,
         blobUrl: file.blobUrl,
+        folderId: file.folderId,
     };
 }
 

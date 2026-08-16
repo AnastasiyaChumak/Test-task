@@ -11,11 +11,14 @@ async function folderList(dataRoomId: string, parentId: string | null): Promise<
     return folders.map(dbFolderToEntity);
 }
 
-async function folderCreate(
-    name: string,
-    dataRoomId: string,
-    parentId: string | null
-): Promise<Folder> {
+async function folderCreate(name: string, dataRoomId: string, parentId: string | null): Promise<Folder> {
+    const existing = await prisma.folder.findFirst({
+        where: { name, dataRoomId, parentId },
+    });
+    if (existing) {
+        throw new Error("A folder with this name already exists here.");
+    }
+
     let path = "/";
     if (parentId) {
         const parent = await prisma.folder.findUniqueOrThrow({
@@ -91,5 +94,7 @@ async function folderListAll(dataRoomId: string): Promise<Folder[]> {
     });
     return folders.map(dbFolderToEntity);
 }
+
+
 
 export const folderRepository = { folderList, folderCreate, folderGetByIds, folderRename, folderCountSubtree, folderDelete, folderListAll };

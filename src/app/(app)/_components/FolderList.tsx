@@ -6,6 +6,7 @@ import { Button } from "~/shared/ui/button";
 import { Input } from "~/shared/ui/input";
 import { useState } from "react";
 import Link from "next/link";
+import { X } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -40,6 +41,9 @@ export function FolderList({
         onSuccess: () => {
             setName("");
             void utils.folder.list.invalidate();
+        },
+        onError: (error) => {
+            alert(error.message);
         },
     });
 
@@ -81,7 +85,7 @@ export function FolderList({
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button variant="destructive" size="sm" onClick={() => setCountTarget(folder.id)}>
-                                        Delete
+                                        <X />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>

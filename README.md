@@ -63,6 +63,8 @@ App runs at `http://localhost:3000`.
 
 **Sharing model.** `Share` is a single table with `resourceType` (`"dataRoom" | "folder" | "file"`) and `resourceId`, rather than three separate nullable foreign keys (`dataRoomId`, `folderId`, `fileId`) on the Share record. This means adding a new shareable resource type in the future is a code change, not a schema migration — see "How it scales." The trade-off is that Prisma can't enforce a real foreign-key constraint on `resourceId` (it isn't tied to one specific table), so referential integrity for that field is enforced in the repository layer instead of the database.
 
+**Note on Sharing:** the `Share` model and its design rationale below were designed as part of the data model, but the sharing UI/API endpoints were not implemented due to time constraints. The model is ready to be built on top of — see "How it scales" for how it would extend to per-user roles.
+
 **File location is optional, not folder-relative.** `File.folderId` is nullable — a file can live directly at the Data Room root (matching the Google Drive/Dropbox model referenced in the brief) rather than being forced into a folder.
 
 **Root Data Room UX.** Users can create multiple Data Rooms rather than getting one auto-provisioned — this matches "share a Data Room" being a first-class action in the requirements, implying more than one can exist per user.

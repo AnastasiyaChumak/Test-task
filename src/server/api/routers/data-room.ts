@@ -12,4 +12,14 @@ export const dataRoomRouter = createTRPCRouter({
     .mutation(({ ctx, input }) => {
       return dataRoomRepository.dataRoomCreate(input.name, ctx.session.user.id);
     }),
+
+  rename: protectedProcedure
+    .input(z.object({ name: z.string().min(1).max(255), id: z.string() }))
+    .mutation(({ input }) => {
+      return dataRoomRepository.dataRoomRename(input.id, input.name);
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ input }) => dataRoomRepository.dataRoomDelete(input.id)),
 });

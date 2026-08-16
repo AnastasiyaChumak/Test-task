@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import { api } from "~/trpc/react";
-import { Button } from "~/shared/ui/button";
 
 export function FileUpload({
     dataRoomId,
@@ -15,9 +14,11 @@ export function FileUpload({
     const utils = api.useUtils();
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const createFileMutation = api.file.create.useMutation({
         onSuccess: () => void utils.file.list.invalidate(),
+        onError: (error) => alert(error.message),
     });
 
     async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -44,14 +45,20 @@ export function FileUpload({
             });
         } finally {
             setUploading(false);
+            if (inputRef.current) inputRef.current.value = "";
         }
     }
 
-
     return (
         <div className="mb-4">
-            <input type="file" onChange={(e) => void handleFileChange(e)} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-500">Uploading... {progress}%</p>}
+            <input
+                type="file"
+                ref={inputRef}
+                onChange={(e) => void handleFileChange(e)}
+                disabled={uploading}
+                className="text-sm file:mr-3 file:rounded-md file:border-0 file:bg-black file:px-3 file:py-1.5 file:text-white file:text-sm hover:file:bg-gray-800 file:cursor-pointer cursor-pointer"
+            />
+            {uploading && <p className="text-sm text-gray-500 pt-2">Uploading... {progress}%</p>}
         </div>
     );
 }

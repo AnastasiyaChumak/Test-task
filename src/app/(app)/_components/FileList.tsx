@@ -5,6 +5,7 @@ import { api } from "~/trpc/react";
 import { Button } from "~/shared/ui/button";
 import { Input } from "~/shared/ui/input";
 import type { File } from "~/entities/file/domain";
+import { X } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -79,9 +80,11 @@ export function FileList({
                                 </span>
                             )}
                             <Select
-                                onValueChange={(value) =>
-                                    moveMutation.mutate({ id: file.id, folderId: value === "root" ? null : value })
-                                }
+                                onValueChange={(value) => {
+                                    const newFolderId = value === "root" ? null : value;
+                                    if (newFolderId === file.folderId) return;
+                                    moveMutation.mutate({ id: file.id, folderId: newFolderId });
+                                }}
                             >
                                 <SelectTrigger className="w-40">
                                     <SelectValue placeholder="Move to..." />
@@ -100,7 +103,7 @@ export function FileList({
                                 size="sm"
                                 onClick={() => deleteMutation.mutate({ id: file.id })}
                             >
-                                Delete
+                                <X />
                             </Button>
                         </div>
                     ))}

@@ -24,7 +24,7 @@ model Folder {
     name       String
     path       String
     dataRoomId String
-    dataRoom   DataRoom @relation(fields: [dataRoomId], references: [id])
+    dataRoom   DataRoom @relation(fields: [dataRoomId], references: [id], onDelete: Cascade)
     parentId   String?
     parent     Folder?  @relation("FolderTree", fields: [parentId], references: [id])
     children   Folder[] @relation("FolderTree")
@@ -39,7 +39,7 @@ model File {
     mimeType   String
     blobUrl    String
     dataRoomId String
-    dataRoom   DataRoom @relation(fields: [dataRoomId], references: [id])
+    dataRoom   DataRoom @relation(fields: [dataRoomId], references: [id], onDelete: Cascade)
     folderId   String?
     folder     Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
     createdAt  DateTime @default(now())

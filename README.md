@@ -76,15 +76,6 @@ App runs at `http://localhost:3000`.
 
 ## Data Model / ERD
 
-```mermaid
-erDiagram
-    User ||--o{ DataRoom : owns
-    User ||--o{ Share : "has access via"
-    DataRoom ||--o{ Folder : contains
-    DataRoom ||--o{ File : contains
-    Folder ||--o{ Folder : "nests (parentId)"
-    Folder ||--o{ File : contains
-
     User {
         string id PK
         string name

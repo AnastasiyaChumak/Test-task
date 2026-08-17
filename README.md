@@ -121,7 +121,6 @@ App runs at `http://localhost:3000`.
         boolean isActive
         datetime createdAt
     }
-```
 
 ## How It Scales
 

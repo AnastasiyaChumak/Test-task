@@ -13,7 +13,6 @@ export default async function DataRoomMain({
   const { id } = await params;
 
   const folders = await api.folder.list({ dataRoomId: id, parentId: null });
-  const files = await api.file.list({ dataRoomId: id, folderId: null });
 
   return (
     <div className="flex flex-col gap-6">

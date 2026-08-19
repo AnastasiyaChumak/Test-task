@@ -6,7 +6,7 @@ import { Button } from "~/shared/ui/button";
 import { Input } from "~/shared/ui/input";
 import Link from "next/link";
 import type { DataRoom } from "~/entities/data-room/domain";
-import { X } from 'lucide-react';
+import { X, CirclePlus, Pencil, Trash2 } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,19 +18,28 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "~/shared/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "~/shared/ui/dialog";
+import {
+    SidebarMenuSubItem,
+} from "~/shared/ui/sidebar";
+import { CreateDataRoom } from "./CreateDataRoom";
+
 
 export function DataRoomList({ initialData }: { initialData: DataRoom[] }) {
+
+    const [createOpen, setCreateOpen] = useState(false);
+
     const utils = api.useUtils();
     const { data: dataRooms } = api.dataRoom.list.useQuery(undefined, {
         initialData,
-    });
-
-    const [name, setName] = useState("");
-    const createMutation = api.dataRoom.create.useMutation({
-        onSuccess: () => {
-            setName("");
-            void utils.dataRoom.list.invalidate();
-        },
     });
 
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -48,51 +57,44 @@ export function DataRoomList({ initialData }: { initialData: DataRoom[] }) {
     });
 
     return (
-        <div>
-            <div className="flex gap-2 mb-6">
-                <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="New Data Room name"
-                />
-                <Button
-                    onClick={() => name.trim() && createMutation.mutate({ name })}
-                    disabled={createMutation.isPending}
+        <div className="grid gap-1">
+            {dataRooms.map((room) => (
+                <div
+                    key={room.id}
+                    className="group flex items-center gap-2 rounded-md px-3 py-2 hover:bg-gray-100"
                 >
-                    Create
-                </Button>
-            </div>
+                    {editingId === room.id ? (
+                        <input
+                            autoFocus
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            onBlur={() => editName.trim() && renameMutation.mutate({ id: room.id, name: editName })}
+                            onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+                            className="flex-1 border rounded px-2 py-1 text-sm" 
+                        />
+                    ) : (
+                        <Link href={`/data-room/${room.id}`} className="flex-1 text-sm truncate">
+                            {room.name}
+                        </Link>
+                    )}
 
-            <div className="grid gap-3">
-                {dataRooms.map((room) => (
-                    <div key={room.id} className="flex items-center gap-2 border rounded-lg p-4">
-                        {editingId === room.id ? (
-                            <input
-                                autoFocus
-                                value={editName}
-                                onChange={(e) => setEditName(e.target.value)}
-                                onBlur={() => editName.trim() && renameMutation.mutate({ id: room.id, name: editName })}
-                                onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-                                className="flex-1 border rounded px-2 py-1"
-                            />
-                        ) : (
-                            <Link href={`/data-room/${room.id}`} className="flex-1 hover:underline">
-                                {room.name}
-                            </Link>
-                        )}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
-                            variant="outline"
-                            size="sm"
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 cursor-pointer"
                             onClick={() => {
                                 setEditingId(room.id);
                                 setEditName(room.name);
                             }}
                         >
-                            Rename
+                            <Pencil className="h-3.5 w-3.5" />
                         </Button>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm"><X /></Button>
+                                <Button variant="ghost" size="icon" className="cursor-pointer h-6 w-6 text-red-500 hover:text-red-600">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
@@ -110,11 +112,11 @@ export function DataRoomList({ initialData }: { initialData: DataRoom[] }) {
                             </AlertDialogContent>
                         </AlertDialog>
                     </div>
-                ))}
-                {dataRooms.length === 0 && (
-                    <p className="text-gray-500">No Data Rooms yet — create one above.</p>
-                )}
-            </div>
+                </div>
+            ))}
+            {dataRooms.length === 0 && (
+                <p className="text-gray-500 text-sm px-3">No Data Rooms yet — create one above.</p>
+            )}
         </div>
     );
 }

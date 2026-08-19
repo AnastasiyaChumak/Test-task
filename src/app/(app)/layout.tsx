@@ -6,6 +6,9 @@ import Header from "./_components/Header";
 import { TRPCReactProvider } from "~/trpc/react";
 import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "~/shared/ui/sidebar";
+import AppSidebar from "./_components/AppSidebar";
+import { api } from "~/trpc/server";
 
 export const runtime = "nodejs"
 
@@ -27,12 +30,21 @@ export default async function RootLayout({
   if (!session) {
     redirect("/sign-in");
   }
+
+  const dataRooms = await api.dataRoom.list();
+
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
         <TRPCReactProvider>
-          <Header />
-          {children}
+          <SidebarProvider>
+            <AppSidebar initialData={dataRooms} />
+            <SidebarInset>
+              <Header />
+              <SidebarTrigger />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
         </TRPCReactProvider>
       </body>
     </html>
